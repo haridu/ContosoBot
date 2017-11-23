@@ -42,6 +42,14 @@ function handleDeletedFoodResponse(body,session,username, favouritecurrencies){
 }
 
 
+function handleSpecificCurrenciesExchangeRateResponse(message, session, username) {
+    
+    // Print all favourite foods for the user that is currently logged in
+    session.send(" Exchange rate from %s to %s are", username, allFoods);                
+    
+}
+
+
 function handleFavouriteCurrenciesResponse(message, session, username) {
     var favouriteFoodResponse = JSON.parse(message);
     var allFoods = [];

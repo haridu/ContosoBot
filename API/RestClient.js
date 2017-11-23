@@ -1,5 +1,16 @@
 var request = require('request');
 
+exports.getspecificexchangerate = function getData(url, session, username, callback){
+    request.get(url, {'headers':{'Content-Type':'application/json'}}, 
+    function handleGetReponse(err,res,body){
+        if(err){
+            console.log(err);
+        }else {
+            callback(body, session, username);
+        }
+    });
+};
+
 exports.getFavouriteFood = function getData(url, session, username, callback){
     request.get(url, {'headers':{'ZUMO-API-VERSION': '2.0.0'}}, function handleGetReponse(err,res,body){
         if(err){

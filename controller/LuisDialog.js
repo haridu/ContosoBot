@@ -1,5 +1,6 @@
 var builder = require('botbuilder');
 var currencies = require("./Favouritecurrencies");
+var currenciesexchange=require("./EchangeRate");
 // Some sections have been omitted
 var isAttachment = false;
 
@@ -10,15 +11,19 @@ exports.startDialog = function (bot) {
     
     bot.recognizer(recognizer);
 
-    bot.dialog('GetExchangeRate', function (session, args) {
+    bot.dialog('GetSpecifcCurrencyExchangeRates', [
+        
+        function (session, results, next) {
 
-        session.send("Get GetExchangeRate intent found");
-    
-    }).triggerAction({
-        matches: 'GetExchangeRate'
+                session.send("Converting the currencies");
+                currenciesexchange.displaySpecificcurrencyexchangerate(session, session.conversationData["fromcurrency"]);  // <---- THIS LINE HERE IS WHAT WE NEED 
+        }
+    ]).triggerAction({
+        matches: 'GetSpecifcCurrencyExchangeRates'
     });
 
-    bot.dialog('GetFavouritedCurrencyExchangeRates', [
+
+    bot.dialog('GetFavoriteCurrencies', [
         function (session, args, next) {
             session.dialogData.args = args || {};        
             if (!session.conversationData["username"]) {
@@ -38,7 +43,7 @@ exports.startDialog = function (bot) {
             
         }
     ]).triggerAction({
-        matches: 'GetFavouritedCurrencyExchangeRates'
+        matches: 'GetFavoriteCurrencies'
     });
 
 
