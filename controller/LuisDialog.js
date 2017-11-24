@@ -34,12 +34,9 @@ exports.startDialog = function (bot) {
         session.send("calling");
         customVision.retreiveMessage(session);
 
-        return true;
+       
     }
-    else {
-        return false;
-    }
-
+  
 
     function isAttachment(session) {
 
