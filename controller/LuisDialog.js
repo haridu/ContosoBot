@@ -24,26 +24,14 @@ exports.startDialog = function (bot) {
     ]).triggerAction({
         matches: 'GetSpecifcCurrencyExchangeRates'
     });
-*/
-function isAttachment(session) { 
-    var msg = session.message.text;
-    if ((session.message.attachments && session.message.attachments.length > 0) || msg.includes("http")) {
-        //call custom vision
-        customVision.retreiveMessage(session);
-
-        session.send("No food identified!!!");
-        return true;
-    }
-    else {
-        return false;
-    }
-}
-    
-    
+ */
+ 
     bot.dialog('QnA', [
         function (session, args, next) {
+            if (!isAttachment(session)) {
             session.dialogData.args = args || {};
             builder.Prompts.text(session, "What is your question?");
+        }
         },
         function (session, results, next) {
             qna.talkToQnA(session, results.response);
@@ -54,15 +42,17 @@ function isAttachment(session) {
 
     bot.dialog('GetFavoriteCurrencies', [
         function (session, args, next) {
+            if (!isAttachment(session)) {
             session.dialogData.args = args || {};        
             if (!session.conversationData["username"]) {
                 builder.Prompts.text(session, "Please enter your username so I can retrive saved currencies");                
             } else {
                 next(); // Skip if we already have this info.
             }
+        }
         },
         function (session, results, next) {
-
+            if (!isAttachment(session)) {
                 if (results.response) {
                     session.conversationData["username"] = results.response;
                 }
@@ -70,7 +60,7 @@ function isAttachment(session) {
                 session.send("Retrieving exchange rates of your saved currencies");
                 currencies.displayFavouriteCurrencies(session, session.conversationData["username"]);  // <---- THIS LINE HERE IS WHAT WE NEED 
             
-        }
+        }}
     ]).triggerAction({
         matches: 'GetFavoriteCurrencies'
     });
@@ -162,8 +152,23 @@ function isAttachment(session) {
     });
     
 
-    
+    function isAttachment(session) { 
 
+        session.send("calling the image");
+        
+        var msg = session.message.text;
+        if ((session.message.attachments && session.message.attachments.length > 0) || msg.includes("http")) {
+            //call custom vision
+            customVision.retreiveMessage(session);
+    
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    
     
 
 }
