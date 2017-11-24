@@ -13,7 +13,7 @@ exports.startDialog = function (bot) {
     
     bot.recognizer(recognizer);
 
-    
+    /*
     bot.dialog('GetSpecifcCurrencyExchangeRates', [
         
         function (session, results, next) {
@@ -24,7 +24,20 @@ exports.startDialog = function (bot) {
     ]).triggerAction({
         matches: 'GetSpecifcCurrencyExchangeRates'
     });
+*/
+function isAttachment(session) { 
+    var msg = session.message.text;
+    if ((session.message.attachments && session.message.attachments.length > 0) || msg.includes("http")) {
+        //call custom vision
+        customVision.retreiveMessage(session);
 
+        session.send("No food identified!!!");
+        return true;
+    }
+    else {
+        return false;
+    }
+}
     
     
     bot.dialog('QnA', [
@@ -149,18 +162,7 @@ exports.startDialog = function (bot) {
     });
     
 
-    function isAttachment(session) { 
-        var msg = session.message.text;
-        if ((session.message.attachments && session.message.attachments.length > 0) || msg.includes("http")) {
-            //call custom vision
-            customVision.retreiveMessage(session);
     
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
 
     
 
