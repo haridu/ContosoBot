@@ -2,24 +2,10 @@ var builder = require('botbuilder');
 var currencies = require("./Favouritecurrencies");
 var currenciesexchange=require("./EchangeRate");
 var qna=require("./QnAMaker");
-var customVision = require('./CognitiveDialog');
+var customVision = require('./CustomVision');
 // Some sections have been omitted
 var isAttachment = false;
 
-
-function isAttachment(session) { 
-    var msg = session.message.text;
-    if ((session.message.attachments && session.message.attachments.length > 0) || msg.includes("http")) {
-        //call custom vision
-        session.send("Calling custom vision");
-        customVision.retreiveMessage(session);
-
-        return true;
-    }
-    else {
-        return false;
-    }
-}
 
 exports.startDialog = function (bot) {
     // Replace {YOUR_APP_ID_HERE} and {YOUR_KEY_HERE} with your LUIS app ID and your LUIS key, respectively.
@@ -27,7 +13,7 @@ exports.startDialog = function (bot) {
     
     bot.recognizer(recognizer);
 
-
+    
     bot.dialog('GetSpecifcCurrencyExchangeRates', [
         
         function (session, results, next) {
@@ -39,6 +25,8 @@ exports.startDialog = function (bot) {
         matches: 'GetSpecifcCurrencyExchangeRates'
     });
 
+    
+    
     bot.dialog('QnA', [
         function (session, args, next) {
             session.dialogData.args = args || {};
@@ -159,6 +147,21 @@ exports.startDialog = function (bot) {
     ]).triggerAction({
         matches: 'LookForFavourite'
     });
+    
+
+    function isAttachment(session) { 
+        var msg = session.message.text;
+        if ((session.message.attachments && session.message.attachments.length > 0) || msg.includes("http")) {
+            //call custom vision
+            customVision.retreiveMessage(session);
+    
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
     
 
 }
