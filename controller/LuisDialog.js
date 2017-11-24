@@ -7,11 +7,26 @@ var customVision = require('./CognitiveDialog');
 var isAttachment = false;
 
 
+function isAttachment(session) { 
+    var msg = session.message.text;
+    if ((session.message.attachments && session.message.attachments.length > 0) || msg.includes("http")) {
+        //call custom vision
+        session.send("Calling custom vision");
+        customVision.retreiveMessage(session);
+
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
 exports.startDialog = function (bot) {
     // Replace {YOUR_APP_ID_HERE} and {YOUR_KEY_HERE} with your LUIS app ID and your LUIS key, respectively.
     var recognizer = new builder.LuisRecognizer('https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/e4a99a2c-0797-4fc8-be41-c1f5d5c4e439?subscription-key=70a969c682e94fb0a047edde403fe126&verbose=true&timezoneOffset=0&q=');
     
     bot.recognizer(recognizer);
+
 
     bot.dialog('GetSpecifcCurrencyExchangeRates', [
         
@@ -24,19 +39,6 @@ exports.startDialog = function (bot) {
         matches: 'GetSpecifcCurrencyExchangeRates'
     });
 
-    function isAttachment(session) { 
-        var msg = session.message.text;
-        if ((session.message.attachments && session.message.attachments.length > 0) || msg.includes("http")) {
-            //call custom vision
-            customVision.retreiveMessage(session);
-    
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-    
     bot.dialog('QnA', [
         function (session, args, next) {
             session.dialogData.args = args || {};
