@@ -1,6 +1,8 @@
 var builder = require('botbuilder');
 var currencies = require("./Favouritecurrencies");
 var currenciesexchange=require("./EchangeRate");
+var qna=require("./QnAMaker");
+var customVision = require('./CognitiveDialog');
 // Some sections have been omitted
 var isAttachment = false;
 
@@ -22,6 +24,30 @@ exports.startDialog = function (bot) {
         matches: 'GetSpecifcCurrencyExchangeRates'
     });
 
+    function isAttachment(session) { 
+        var msg = session.message.text;
+        if ((session.message.attachments && session.message.attachments.length > 0) || msg.includes("http")) {
+            //call custom vision
+            customVision.retreiveMessage(session);
+    
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    
+    bot.dialog('QnA', [
+        function (session, args, next) {
+            session.dialogData.args = args || {};
+            builder.Prompts.text(session, "What is your question?");
+        },
+        function (session, results, next) {
+            qna.talkToQnA(session, results.response);
+        }
+    ]).triggerAction({
+        matches: 'QnA'
+    });
 
     bot.dialog('GetFavoriteCurrencies', [
         function (session, args, next) {
