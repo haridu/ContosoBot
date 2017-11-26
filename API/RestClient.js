@@ -24,18 +24,18 @@ exports.postQnAResults = function getData(url, session, question, callback){
   };
 
 
-exports.getspecificexchangerate = function getData(url, session, username, callback){
+exports.getspecificexchangerate = function getData(url, session, fromcurrency,tocurrency, callback){
     request.get(url, {'headers':{'Content-Type':'application/json'}}, 
     function handleGetReponse(err,res,body){
         if(err){
             console.log(err);
         }else {
-            callback(body, session, username);
+            callback(body, session,fromcurrency,tocurrency);
         }
     });
 };
 
-exports.getFavouriteFood = function getData(url, session, username, callback){
+exports.GetSaved= function getData(url, session, username, callback){
     request.get(url, {'headers':{'ZUMO-API-VERSION': '2.0.0'}}, function handleGetReponse(err,res,body){
         if(err){
             console.log(err);
@@ -45,7 +45,7 @@ exports.getFavouriteFood = function getData(url, session, username, callback){
     });
 };
 
-exports.postFavouriteFood = function SendData(url, username, favouritecurrencies){
+exports.postToSaved = function SendData(url, username, favouritecurrencies){
     var options = {
         url: url,
         method: 'POST',
@@ -69,7 +69,7 @@ exports.postFavouriteFood = function SendData(url, username, favouritecurrencies
       });
 };
 
-exports.deleteFavouriteFood = function deleteData(url,session, username ,favouriteFood, id, callback){
+exports.deleteCurrencyFromSaved = function deleteData(url,session, username ,favouriteFood, id, callback){
     var options = {
         url: url + "\\" + id,
         method: 'DELETE',

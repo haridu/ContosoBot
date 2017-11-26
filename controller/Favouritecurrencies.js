@@ -1,13 +1,13 @@
 var rest = require('../API/Restclient');
 
-exports.displayFavouriteCurrencies = function getFavouriteCurrencies(session, username){
+exports.displaySavedCurrencies = function getSavedCurrencies(session, username){
     var url = 'http://harinducontosobot.azurewebsites.net/tables/CostosoTable';
-    rest.getFavouriteFood(url, session, username, handleFavouriteCurrenciesResponse)
+    rest.GetSaved(url, session, username, handleSavedCurrenciesResponse);
 };
 
-exports.sendFavouriteFood = function postFavouriteFood(session, username, favouriteFood){
+exports.AddToSavedCurrencies = function postSavedCurrencies(session, username, currency){
     var url = 'http://harinducontosobot.azurewebsites.net/tables/CostosoTable';
-    rest.postFavouriteFood(url, username, favouriteFood);
+    rest.postToSaved(url, username, currency);
 };
 
 
@@ -42,35 +42,37 @@ function handleDeletedFoodResponse(body,session,username, favouritecurrencies){
 }
 
 
-function handleSpecificCurrenciesExchangeRateResponse(message, session, username) {
-    
-    // Print all favourite foods for the user that is currently logged in
-    session.send(" Exchange rate from %s to %s are", username, allFoods);                
-    
-}
 
 
-function handleFavouriteCurrenciesResponse(message, session, username) {
+
+function handleSavedCurrenciesResponse(message, session, username) {
     var favouriteFoodResponse = JSON.parse(message);
-    var allFoods = [];
+    var allCurrencies = [];
+    
     for (var index in favouriteFoodResponse) {
         var usernameReceived = favouriteFoodResponse[index].username;
         console.log(favouriteFoodResponse[index]);
         var favouritecurrencies = favouriteFoodResponse[index].favouritecurrencies;
+        
 
         //Convert to lower case whilst doing comparison to ensure the user can type whatever they like
         if (username.toLowerCase() === usernameReceived.toLowerCase()) {
             //Add a comma after all favourite foods unless last one
             if(favouriteFoodResponse.length - 1) {
-                allFoods.push(favouritecurrencies);
+                allCurrencies.push(favouritecurrencies);
             }
             else {
-                allFoods.push(favouritecurrencies + ', ');
+                allCurrencies.push(favouritecurrencies + ', ');
             }
         }        
     }
     
-    // Print all favourite foods for the user that is currently logged in
-    session.send("%s, your save currencies and their rates are: %s", username, allFoods);                
+    if(allCurrencies.length==0){
+        session.send("%s, you dont have any currencies saved in your account", username);
+    }else{
+ // Print all favourite foods for the user that is currently logged in
+    session.send("%s, your save currencies  are: %s", username, allCurrencies);        
+    }
+           
     
 }
