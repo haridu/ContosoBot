@@ -35,6 +35,19 @@ exports.getspecificexchangerate = function getData(url, session, fromcurrency,to
     });
 };
 
+exports.getexchangerate = function getData(url, session,currency,callback){
+    request.get(url, {'headers':{'Content-Type':'application/json'}}, 
+    function handleGetReponse(err,res,body){
+        if(err){
+            console.log(err);
+        }else {
+            callback(body, session,currency);
+        }
+    });
+};
+
+
+
 exports.GetSaved= function getData(url, session, username, callback){
     request.get(url, {'headers':{'ZUMO-API-VERSION': '2.0.0'}}, function handleGetReponse(err,res,body){
         if(err){
@@ -69,9 +82,10 @@ exports.postToSaved = function SendData(url, username, favouritecurrencies){
       });
 };
 
-exports.deleteCurrencyFromSaved = function deleteData(url,session, username ,favouriteFood, id, callback){
+exports.deleteCurrencyFromSaved = function deleteData(url,session, username ,savedCurrency, id, callback){
+    session.send("in the method");
     var options = {
-        url: url + "\\" + id,
+        url: url + "\\" +"3cc1306b-da7b-4513-b3c9-ad0beb126264",
         method: 'DELETE',
         headers: {
             'ZUMO-API-VERSION': '2.0.0',
@@ -79,13 +93,15 @@ exports.deleteCurrencyFromSaved = function deleteData(url,session, username ,fav
         }
     };
 
+    session.send("after deleting");
+
     request(options,function (err, res, body){
         if( !err && res.statusCode === 200){
+            session.send("deleteing sucessful");
             console.log(body);
-            callback(body,session,username, favouriteFood);
+            callback(body,session,username,savedCurrency);
         }else {
-            console.log(err);
-            console.log(res);
+            session.send(" %s does not exist in the saved list",savedCurrency);
         }
     })
 
