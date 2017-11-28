@@ -51,8 +51,11 @@ function handleSpecificCurrenciesExchangeRateResponse(message, session, fromcurr
 
     var attachment = [];
     
+    if((fromvalue==null)||(tovalue==null)){
+     session.send('Hey, I could not find the exchange rates your looking for maybe try another set of currencies :)');
+    }else{
     var card = new builder.ReceiptCard(session)
-        .title('Exchange rate of ' + fromcurrency + ' to ' + tocurrency + '')
+        .title('Contoso Bank - Exchange rate of ' + fromcurrency + ' to ' + tocurrency + '')
         .facts([
             builder.Fact.create(session, "", 'Based on EUR')
         ])
@@ -72,4 +75,4 @@ function handleSpecificCurrenciesExchangeRateResponse(message, session, fromcurr
     var msg = new builder.Message(session).addAttachment(card);
     session.send(msg);
 }
-
+}

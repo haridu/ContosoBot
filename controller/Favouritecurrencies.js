@@ -25,7 +25,7 @@ exports.deleteSavedCurrency = function deleteSaved(session, username, favouritec
 
                 console.log(allCurrencies[i]);
 
-                rest.deleteCurrencyFromSaved(url, session, username, favouritecurrencies, allCurrencies[i].id, handleDeletedFoodResponse)
+                rest.deleteCurrencyFromSaved(url, session, username, favouritecurrencies, allCurrencies[i].id, handleDeletedCurrencyRespons)
                 num++;
             }
         }
@@ -40,34 +40,30 @@ exports.deleteSavedCurrency = function deleteSaved(session, username, favouritec
 
 };
 
-function handleDeletedFoodResponse(body, session, username, savedCurrency) {
-
-    session.send('it does not exist');
-    console.log('Done');
-
+function handleDeletedCurrencyResponse(body, session, username, savedCurrency) {
 }
 
 function handleSavedCurrenciesResponse(message, session, username) {
 
     var allCurrencies = [];
 
-    var favouriteFoodResponse = JSON.parse(message);
+    var SavedcurrencyResponse = JSON.parse(message);
     var attachment = [];
     var messege_text = "\n\n";
     var num = 0;
 
     var card = new builder.HeroCard(session);
-    card.title('Your saved currencies');
+    card.title('Contoso Bank - %s saved currencies list',username);
 
-    for (var index in favouriteFoodResponse) {
-        var usernameReceived = favouriteFoodResponse[index].username;
-        console.log(favouriteFoodResponse[index]);
-        var favouritecurrencies = favouriteFoodResponse[index].favouritecurrencies;
+    for (var index in SavedcurrencyResponse) {
+        var usernameReceived = SavedcurrencyResponse[index].username;
+        console.log(SavedcurrencyResponse[index]);
+        var favouritecurrencies = SavedcurrencyResponse[index].favouritecurrencies;
         num++;
 
         if (username.toLowerCase() === usernameReceived.toLowerCase()) {
 
-            if (favouriteFoodResponse.length) {
+            if (SavedcurrencyResponse.length) {
                 allCurrencies.push(favouritecurrencies);
                 messege_text += num + "  " + favouritecurrencies + "\n\n";
             }

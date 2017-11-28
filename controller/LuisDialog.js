@@ -6,7 +6,7 @@ var customVision = require("./CustomVision");
 var textAnalysis = require("./TextAnalysis");
 var login = require("./Login");
 
-var isAttachment = false;
+//var isAttachment = false;
 
 
 exports.startDialog = function (bot) {
@@ -25,9 +25,9 @@ exports.startDialog = function (bot) {
             } else {
                 var fromcurrencyEntity = builder.EntityRecognizer.findEntity(intent.entities, 'fromcurrency').entity.toUpperCase();
                 var tocurrencyEntity = builder.EntityRecognizer.findEntity(intent.entities, 'tocurrency').entity.toUpperCase();
-                session.send("Converting the currencies");
+                session.send("Getting exchange rates...");
                 currenciesexchange.displaySpecificcurrencyexchangerate(session, fromcurrencyEntity, tocurrencyEntity);  // <---- THIS LINE HERE IS WHAT WE NEED 
-                session.send("from is %s to is %s", fromcurrencyEntity, tocurrencyEntity);
+                
             }
 
         }
@@ -61,7 +61,7 @@ exports.startDialog = function (bot) {
         function (session, args, next) {
             session.dialogData.args = args || {};
             if (!session.conversationData["username"]) {
-                builder.Prompts.text(session, "Please enter your username so I can retrive saved currencies");
+                builder.Prompts.text(session, "Please enter your username so I can retrieve your saved currencies");
             } else {
                 next();
             }
@@ -72,9 +72,9 @@ exports.startDialog = function (bot) {
                 session.conversationData["username"] = results.response;
             }
 
-            session.send("Retrieving exchange rates of your saved currencies");
+            session.send("Retrieving your saved currencies......");
             currencies.displaySavedCurrencies(session, session.conversationData["username"]);  // <---- THIS LINE HERE IS WHAT WE NEED 
-
+            session.endDialog();
         }
     ]).triggerAction({
         matches: 'GetMyCurrencies'
@@ -170,17 +170,17 @@ exports.startDialog = function (bot) {
             }
         },
         function (session, results, next) {
-           
-                // Pulls out the food entity from the session if it exists
-                var currencyEntity = builder.EntityRecognizer.findEntity(session.dialogData.args.intent.entities, 'currency');
 
-                // Checks if the for entity was found
-                if (currencyEntity) {
-                   
-                    currencies.deleteSavedCurrency(session, session.conversationData['username'], currencyEntity.entity);
-                } else {
-                    session.send("No food identified! Please try again");
-                }
+            // Pulls out the food entity from the session if it exists
+            var currencyEntity = builder.EntityRecognizer.findEntity(session.dialogData.args.intent.entities, 'currency');
+
+            // Checks if the for entity was found
+            if (currencyEntity) {
+
+                currencies.deleteSavedCurrency(session, session.conversationData['username'], currencyEntity.entity);
+            } else {
+                session.send("No food identified! Please try again");
+            }
 
         }
     ]).triggerAction({
@@ -203,21 +203,35 @@ exports.startDialog = function (bot) {
        });
    */
 
+    bot.dialog('Image', function (session, args) {
+
+        if (customVision.getnoteidentification(session)) {
+
+            session.send('converting image');
+        } else {
+            session.send('Sorry, I did not understand \'%s\'. Type \'help\' if you need assistance.', session.message.text);
+        }
+
+
+    }).triggerAction({
+        matches: 'Image'
+    });
+
 
     bot.dialog('Welcome', function (session, args) {
 
-            session.send("WelcomeIntent intent found");
-            var documents = {
-                'documents': [
-                    { 'id': '1', 'text': session.message.text }
-                ]
-            };
+        session.send("Hello there!");
+        var documents = {
+            'documents': [
+                { 'id': '1', 'text': session.message.text }
+            ]
+        };
 
-            textAnalysis.HandleText(documents, session);
+        textAnalysis.HandleText(documents, session);
 
-        }).triggerAction({
-            matches: 'Welcome'
-        });
+    }).triggerAction({
+        matches: 'Welcome'
+    });
 
 
 
