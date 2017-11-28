@@ -4,17 +4,15 @@ var currenciesexchange = require("./EchangeRate");
 var qna = require("./QnAMaker");
 var customVision = require("./CustomVision");
 var textAnalysis = require("./TextAnalysis");
-var login=require("./Login");
-// Some sections have been omitted
+var login = require("./Login");
+
 var isAttachment = false;
 
 
 exports.startDialog = function (bot) {
-    // Replace {YOUR_APP_ID_HERE} and {YOUR_KEY_HERE} with your LUIS app ID and your LUIS key, respectively.
+
     var recognizer = new builder.LuisRecognizer('https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/e4a99a2c-0797-4fc8-be41-c1f5d5c4e439?subscription-key=70a969c682e94fb0a047edde403fe126&verbose=true&timezoneOffset=0&q=');
-
     bot.recognizer(recognizer);
-
 
     bot.dialog('GetSpecifcCurrencyExchangeRates', [
 
@@ -61,22 +59,22 @@ exports.startDialog = function (bot) {
 
     bot.dialog('GetMyCurrencies', [
         function (session, args, next) {
-            if (session.conversationData["Athenticated"] == "true") {
+            session.dialogData.args = args || {};
+            if (!session.conversationData["username"]) {
+                builder.Prompts.text(session, "Please enter your username so I can retrive saved currencies");
+            } else {
                 next();
             }
-            else {
-                session.beginDialog('Login');
-            }
         },
-        function (session, results) {
+        function (session, results, next) {
 
-            if (session.conversationData["Athenticated"]!="true") {
-                session.send('you were not logged in, Please try again');
-               // session.endDialog();
-            } else {
-                session.send("Retrieving exchange rates of your saved currencies");
-                currencies.displaySavedCurrencies(session, session.conversationData["username"]);  // <---- THIS LINE HERE IS WHAT WE NEED 
+            if (results.response) {
+                session.conversationData["username"] = results.response;
             }
+
+            session.send("Retrieving exchange rates of your saved currencies");
+            currencies.displaySavedCurrencies(session, session.conversationData["username"]);  // <---- THIS LINE HERE IS WHAT WE NEED 
+
         }
     ]).triggerAction({
         matches: 'GetMyCurrencies'
@@ -116,9 +114,9 @@ exports.startDialog = function (bot) {
 
             } else {
 
-                login.Athenticate(session,session.conversationData['username'], session.conversationData['password']);
-                             
-                session.send('%s is the username password is %s', session.conversationData['username'], session.conversationData['password']);
+                login.Athenticate(session, session.conversationData['username'], session.conversationData['password']);
+
+                session.send('%s is the username password is %s and auth status %s', session.conversationData['username'], session.conversationData['password'], session.conversationData['Athenticated']);
             }
             session.endDialog();
         }
@@ -160,6 +158,8 @@ exports.startDialog = function (bot) {
     });
 
 
+
+
     bot.dialog('DeleteFromSaved', [
         function (session, args, next) {
             session.dialogData.args = args || {};
@@ -170,29 +170,22 @@ exports.startDialog = function (bot) {
             }
         },
         function (session, results, next) {
+           
+                // Pulls out the food entity from the session if it exists
+                var currencyEntity = builder.EntityRecognizer.findEntity(session.dialogData.args.intent.entities, 'currency');
 
-            //Add this code in otherwise your username will not work.
-            if (results.response) {
-                session.conversationData["username"] = results.response;
-            }
+                // Checks if the for entity was found
+                if (currencyEntity) {
+                   
+                    currencies.deleteSavedCurrency(session, session.conversationData['username'], currencyEntity.entity);
+                } else {
+                    session.send("No food identified! Please try again");
+                }
 
-            session.send("You want to delete one of your saved currencies from the list?");
-
-            // Pulls out the food entity from the session if it exists
-            var currencyEntity = builder.EntityRecognizer.findEntity(session.dialogData.args.intent.entities, 'currency');
-
-            // Checks if the for entity was found
-            if (currencyEntity) {
-                session.send('Deleting \'%s\'...', currencyEntity.entity);
-                currencies.deleteSavedCurrency(session, session.conversationData['username'], currencyEntity.entity); //<--- CALLL WE WANT
-            } else {
-                session.send("No currency identified! Please try again");
-            }
-
-
-        }]).triggerAction({
-            matches: 'DeleteFromSaved'
-        });
+        }
+    ]).triggerAction({
+        matches: 'DeleteFromSaved'
+    });
 
 
     /* This works but needs to to be changed
@@ -213,18 +206,18 @@ exports.startDialog = function (bot) {
 
     bot.dialog('Welcome', function (session, args) {
 
-        session.send("WelcomeIntent intent found");
-        var documents = {
-            'documents': [
-                { 'id': '1', 'text': session.message.text }
-            ]
-        };
+            session.send("WelcomeIntent intent found");
+            var documents = {
+                'documents': [
+                    { 'id': '1', 'text': session.message.text }
+                ]
+            };
 
-        textAnalysis.HandleText(documents, session);
+            textAnalysis.HandleText(documents, session);
 
-    }).triggerAction({
-        matches: 'Welcome'
-    });
+        }).triggerAction({
+            matches: 'Welcome'
+        });
 
 
 

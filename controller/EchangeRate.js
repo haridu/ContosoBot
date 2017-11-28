@@ -20,7 +20,7 @@ function BasedonExchangeRateResponse(message, session, currency) {
 
     var BasedonResponse = JSON.parse(message);
     var attachment = [];
-    var messege_text;
+    var messege_text="";
   
     var card = new builder.HeroCard(session);
     card.title('Exchange rates based on ' + currency);
@@ -28,7 +28,7 @@ function BasedonExchangeRateResponse(message, session, currency) {
     
    
     for (var key in BasedonResponse.rates) {
-        messege_text +=key + " = " + BasedonResponse.rates[key]+"\n\n"; 
+        messege_text+= " "+key + " = " + BasedonResponse.rates[key]+"\n\n"; 
     }
     card.text(messege_text);
     card.buttons([builder.CardAction.openUrl(session, 'http://www.nzforex.co.nz/exchange-rate/'+currency+'', 'More Information on based on '+currency+'')]);
@@ -42,7 +42,7 @@ function BasedonExchangeRateResponse(message, session, currency) {
 }
 
 function handleSpecificCurrenciesExchangeRateResponse(message, session, fromcurrency, tocurrency) {
-    session.send("here");
+    
     var SpecificCurrenciesResponse = JSON.parse(message);
 
     var fromvalue = SpecificCurrenciesResponse.rates[fromcurrency];

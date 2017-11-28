@@ -1,4 +1,4 @@
-var request = require('request'); //node module for http post requests
+var request = require('request'); 
 
 exports.retreiveMessage = function (session){
     

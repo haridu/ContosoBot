@@ -37,7 +37,7 @@ var bot = new builder.UniversalBot(connector, function (session) {
         session.send('Sorry, I did not understand \'%s\'. Type \'help\' if you need assistance.', session.message.text);
     }
 
-    //session.send('Sorry, I did not understand \'%s\'. Type \'help\' if you need assistance.', session.message.text);
+   
 });
 
 function isAttachment(session) { 
@@ -53,5 +53,5 @@ function isAttachment(session) {
     }
 }
     
-// This line will call the function in your LuisDialog.js file
+
 luis.startDialog(bot);

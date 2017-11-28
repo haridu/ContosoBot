@@ -92,9 +92,9 @@ exports.postToSaved = function SendData(url, username, favouritecurrencies){
 };
 
 exports.deleteCurrencyFromSaved = function deleteData(url,session, username ,savedCurrency, id, callback){
-    session.send("in the method");
+  
     var options = {
-        url: url + "\\" +"3cc1306b-da7b-4513-b3c9-ad0beb126264",
+        url: url + "\\" +id,
         method: 'DELETE',
         headers: {
             'ZUMO-API-VERSION': '2.0.0',
@@ -102,11 +102,12 @@ exports.deleteCurrencyFromSaved = function deleteData(url,session, username ,sav
         }
     };
 
-    session.send("after deleting");
+  
 
     request(options,function (err, res, body){
         if( !err && res.statusCode === 200){
-            session.send("deleteing sucessful");
+
+            session.send("%s was removed from the list",savedCurrency);
             console.log(body);
             callback(body,session,username,savedCurrency);
         }else {
