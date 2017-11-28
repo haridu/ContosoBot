@@ -46,6 +46,15 @@ exports.getexchangerate = function getData(url, session,currency,callback){
     });
 };
 
+exports.GetSavedAuth= function getData(url, session, username,password, callback){
+    request.get(url, {'headers':{'ZUMO-API-VERSION': '2.0.0'}}, function handleGetReponse(err,res,body){
+        if(err){
+            console.log(err);
+        }else {
+            callback(body, session, username,password);
+        }
+    });
+};
 
 
 exports.GetSaved= function getData(url, session, username, callback){

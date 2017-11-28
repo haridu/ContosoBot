@@ -4,6 +4,7 @@ var currenciesexchange = require("./EchangeRate");
 var qna = require("./QnAMaker");
 var customVision = require("./CustomVision");
 var textAnalysis = require("./TextAnalysis");
+var login=require("./Login");
 // Some sections have been omitted
 var isAttachment = false;
 
@@ -43,13 +44,13 @@ exports.startDialog = function (bot) {
 
             var intent = args.intent;
 
-            if (builder.EntityRecognizer.findEntity(intent.entities, 'currency')==null) {
+            if (builder.EntityRecognizer.findEntity(intent.entities, 'currency') == null) {
                 session.send("Sorry, I could not understand required currency. Please Type 'Help' to view available commands");
             } else {
                 var currencyEntity = builder.EntityRecognizer.findEntity(intent.entities, 'currency').entity.toUpperCase();
-               
-                currenciesexchange.displaybasedonexchangerate(session,currencyEntity);  // <---- THIS LINE HERE IS WHAT WE NEED 
-                
+
+                currenciesexchange.displaybasedonexchangerate(session, currencyEntity);  // <---- THIS LINE HERE IS WHAT WE NEED 
+
             }
 
         }
@@ -58,33 +59,72 @@ exports.startDialog = function (bot) {
     });
 
 
-
     bot.dialog('GetMyCurrencies', [
-        function (session, args, next,results) {
-            session.dialogData.args = args || {};
-            if (!session.conversationData["username"]) {
-                session.send('Please Login to your account');
-                builder.Prompts.text(session, "Please enter your username");
-                if (results.response) {
-                    session.conversationData["username"] = results.response;
-                }
-            } else {
-                next(); // Skip if we already have this info.
+        function (session, args, next) {
+            if (session.conversationData["Athenticated"] == "true") {
+                next();
             }
-            
-        },
-        function (session) {
-            builder.Prompts.text(session, 'Please enter your password');
-            if (results.response) {
-                session.conversationData["password"] = results.response;
+            else {
+                session.beginDialog('Login');
             }
         },
-        // Step 2
         function (session, results) {
-            session.endDialog(`Hello ${results.response}!`);
+
+            if (session.conversationData["Athenticated"]!="true") {
+                session.send('you were not logged in, Please try again');
+               // session.endDialog();
+            } else {
+                session.send("Retrieving exchange rates of your saved currencies");
+                currencies.displaySavedCurrencies(session, session.conversationData["username"]);  // <---- THIS LINE HERE IS WHAT WE NEED 
+            }
         }
     ]).triggerAction({
         matches: 'GetMyCurrencies'
+    });
+
+
+
+    bot.dialog('Login', [
+        function (session, args, next) {
+
+            session.dialogData.args = args || {};
+
+            if (!session.conversationData["username"]) {
+                builder.Prompts.text(session, "Enter a username .");
+            } else {
+                next(); // Skip if we already have this info.
+            }
+        },
+        function (session, results, args, next) {
+            if (results.response) {
+                session.conversationData['username'] = results.response;
+            }
+            session.dialogData.args = args || {};
+            if (!session.conversationData['password']) {
+                builder.Prompts.text(session, "Enter a password ");
+            } else {
+                next(); // Skip if we already have this info.
+            }
+        },
+        function (session, results, args, next) {
+            if (results.response) {
+                session.conversationData['password'] = results.response;
+            }
+
+            if (!session.conversationData['username'] || (!session.conversationData['password'])) {
+                session.send("Username field or Password field is empty please try again");
+
+            } else {
+
+                login.Athenticate(session,session.conversationData['username'], session.conversationData['password']);
+                             
+                session.send('%s is the username password is %s', session.conversationData['username'], session.conversationData['password']);
+            }
+            session.endDialog();
+        }
+
+    ]).triggerAction({
+        matches: 'Login'
     });
 
 
@@ -99,12 +139,9 @@ exports.startDialog = function (bot) {
         },
         function (session, results, next) {
 
-
             if (results.response) {
                 session.conversationData["username"] = results.response;
             }
-
-            
             // Pulls out the food entity from the session if it exists
             var currencyEntity = builder.EntityRecognizer.findEntity(session.dialogData.args.intent.entities, 'currency');
 
