@@ -17,7 +17,6 @@ var connector = new builder.ChatConnector({
     appPassword: "llhRUQXD499(}hsdxWM60$|"
 });
 
-
 /*
 var connector = new builder.ChatConnector({
     appId: process.env.MICROSOFT_APP_ID,
@@ -53,6 +52,16 @@ function isAttachment(session) {
         return false;
     }
 }
+
+bot.on('conversationUpdate', function (message) {
+    if (message.membersAdded) {
+        message.membersAdded.forEach(function (identity) {
+            if (identity.id === message.address.bot.id) {
+                bot.beginDialog(message.address, 'start');
+            }
+        });
+    }
+});
     
 
 luis.startDialog(bot);

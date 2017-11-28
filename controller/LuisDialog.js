@@ -1,12 +1,9 @@
 var builder = require('botbuilder');
 var currencies = require("./Favouritecurrencies");
 var currenciesexchange = require("./EchangeRate");
-var qna = require("./QnAMaker");
 var customVision = require("./CustomVision");
 var textAnalysis = require("./TextAnalysis");
 var login = require("./Login");
-
-//var isAttachment = false;
 
 
 exports.startDialog = function (bot) {
@@ -27,9 +24,9 @@ exports.startDialog = function (bot) {
                 var tocurrencyEntity = builder.EntityRecognizer.findEntity(intent.entities, 'tocurrency').entity.toUpperCase();
                 session.send("Getting exchange rates...");
                 currenciesexchange.displaySpecificcurrencyexchangerate(session, fromcurrencyEntity, tocurrencyEntity);  // <---- THIS LINE HERE IS WHAT WE NEED 
-                
-            }
 
+            }
+            session.endDialog();
         }
     ]).triggerAction({
         matches: 'GetSpecifcCurrencyExchangeRates'
@@ -50,7 +47,7 @@ exports.startDialog = function (bot) {
                 currenciesexchange.displaybasedonexchangerate(session, currencyEntity);  // <---- THIS LINE HERE IS WHAT WE NEED 
 
             }
-
+            session.endDialog();
         }
     ]).triggerAction({
         matches: 'GetExchangeratebasedOn'
@@ -151,6 +148,7 @@ exports.startDialog = function (bot) {
             } else {
                 session.send("No currency identified!!!");
             }
+            session.endDialog();
         }
 
     ]).triggerAction({
@@ -182,26 +180,12 @@ exports.startDialog = function (bot) {
                 session.send("No food identified! Please try again");
             }
 
+            session.endDialog();
         }
     ]).triggerAction({
         matches: 'DeleteFromSaved'
     });
 
-
-    /* This works but needs to to be changed
-   
-       bot.dialog('QnA', [
-           function (session, args, next) {
-               session.dialogData.args = args || {};
-               builder.Prompts.text(session, "What is your question?");
-           },
-           function (session, results, next) {
-               qna.talkToQnA(session, results.response);
-           }
-       ]).triggerAction({
-           matches: 'QnA'
-       });
-   */
 
     bot.dialog('Image', function (session, args) {
 
@@ -211,12 +195,60 @@ exports.startDialog = function (bot) {
         } else {
             session.send('Sorry, I did not understand \'%s\'. Type \'help\' if you need assistance.', session.message.text);
         }
-
+        session.endDialog();
 
     }).triggerAction({
         matches: 'Image'
     });
 
+
+    bot.dialog('start', function (session, args) {
+
+        var attachment = [];
+        var messege_text = "";
+
+        var card = new builder.HeroCard(session);
+        card.title('Hey ');
+
+        card.images([builder.CardImage.create(session, 'http://contosobotweb.azurewebsites.net/img/profile.png')]);
+        messege_text = "Hey, My name is ContsoBot :) I am powered by Contoso Bank. /n/n I can help you by providing uptodate currency exchange rates as your request.//n Please type 'help' to view my other functionalities and how to interact with me.";
+
+        card.text(messege_text);
+        card.buttons([builder.CardAction.openUrl(session, 'http://contosobotweb.azurewebsites.net/', 'My website :)')]);
+        attachment.push(card);
+
+        var message = new builder.Message(session)
+            .attachmentLayout(builder.AttachmentLayout.carousel)
+            .attachments(attachment);
+        session.send(message);
+    }).triggerAction({
+        matches: 'start'
+    });
+
+
+
+    bot.dialog('Help', function (session, args) {
+
+        var attachment = [];
+        var messege_text = "";
+
+        var card = new builder.HeroCard(session);
+        card.title('Im here to Help :) ');
+
+        card.images([builder.CardImage.create(session, 'http://contosobotweb.azurewebsites.net/img/profile.png')]);
+        messege_text = "Available Functions \n\n1) show exchange rates between two currencies: eg- What are the exchange rates between USD and NZD? \n\n 2)Show exchange rates based on requested currency: eg- 'What are the exchange rates based on USD' \n\n 3)Show saved list : eg- 'what are my saved currencies? '\n\n 4)add to  saved list : eg- 'add NZD to my saved list'\n\n 5)delete from the saved list: eg- 'delete NZD from my saved list'\n\n 6)Identify New Zealand currency notes with non New Zeland currency notes : eg- 'http://www.polymernotes.com/nz$100-p189f.jpg'\n\n";
+
+        card.text(messege_text);
+        card.buttons([builder.CardAction.openUrl(session, 'http://contosobotweb.azurewebsites.net/', 'My website :)')]);
+        attachment.push(card);
+
+        var message = new builder.Message(session)
+            .attachmentLayout(builder.AttachmentLayout.carousel)
+            .attachments(attachment);
+        session.send(message);
+    }).triggerAction({
+        matches: 'Help'
+    });
 
     bot.dialog('Welcome', function (session, args) {
 
@@ -228,7 +260,7 @@ exports.startDialog = function (bot) {
         };
 
         textAnalysis.HandleText(documents, session);
-
+        session.endDialog();
     }).triggerAction({
         matches: 'Welcome'
     });
