@@ -7,8 +7,9 @@ var login = require("./Login");
 
 //starts bot dialogs
 exports.startDialog = function (bot) {
-    //luis instantiation
-    var recognizer = new builder.LuisRecognizer('https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/e4a99a2c-0797-4fc8-be41-c1f5d5c4e439?subscription-key=70a969c682e94fb0a047edde403fe126&verbose=true&timezoneOffset=0&q=');
+
+    //luis instantiation- added backup endpoint becouse hits over limit
+    var recognizer = new builder.LuisRecognizer('https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/4634588b-594c-4791-9994-bcdaf57b3b7e?subscription-key=32b6f3a6b6c14af2aa283521ff247486&verbose=true&timezoneOffset=0&q=');
     bot.recognizer(recognizer);
 
     //dialog for getting exchange rates between two currencies
@@ -86,7 +87,7 @@ exports.startDialog = function (bot) {
             session.dialogData.args = args || {};
 
             if (!session.conversationData["username"]) {
-                builder.Prompts.text(session, "Enter a username .");
+                builder.Prompts.text(session, "Enter your username .");
             } else {
                 next(); 
             }
@@ -97,7 +98,7 @@ exports.startDialog = function (bot) {
             }
             session.dialogData.args = args || {};
             if (!session.conversationData['password']) {
-                builder.Prompts.text(session, "Enter a password ");
+                builder.Prompts.text(session, "Enter your password ");
             } else {
                 next(); 
             }
@@ -212,7 +213,7 @@ exports.startDialog = function (bot) {
         card.title('Hey ');
 
         card.images([builder.CardImage.create(session, 'http://contosobotweb.azurewebsites.net/img/profile.png')]);
-        messege_text = "Hey, My name is ContsoBot :) I am powered by Contoso Bank. /n/n I can help you by providing uptodate currency exchange rates as your request.//n Please type 'help' to view my other functionalities and how to interact with me.";
+        messege_text = "Hey, My name is ContsoBot :) I am powered by Contoso Bank. \n\n I can help you by providing uptodate currency exchange rates as your request.\n\n Please type 'help' to view my other functionalities and how to interact with me.";
 
         card.text(messege_text);
         card.buttons([builder.CardAction.openUrl(session, 'http://contosobotweb.azurewebsites.net/', 'My website :)')]);

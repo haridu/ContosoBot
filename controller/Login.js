@@ -8,16 +8,20 @@ exports.Athenticate = function getAuthentication(session, username, password) {
 
 //check for authentication with username and password
 function handleAuthentication(message, session, username, password) {
-    var favouriteFoodResponse = JSON.parse(message);
+    var AuthResponse = JSON.parse(message);
     var Authticated = false;
-   
-    for (var index in favouriteFoodResponse) {
-        var usernameReceived = favouriteFoodResponse[index].username;
-        var passwordReceived = favouriteFoodResponse[index].favouritecurrencies;
+    var crypto = require('crypto'); 
+    var hashed = crypto.createHash('md5').update(password).digest('hex');
+    console.log(hashed);
+    
+      
+    for (var index in AuthResponse) {
+        var usernameReceived = AuthResponse[index].username;
+        var passwordReceived = AuthResponse[index].password;
 
         if (username.toLowerCase() === usernameReceived.toLowerCase()) {
 
-            if (username.toLowerCase() === usernameReceived.toLowerCase()) {
+            if (hashed == passwordReceived) {
 
                 Authticated = true;
                 break;
@@ -33,6 +37,7 @@ function handleAuthentication(message, session, username, password) {
         session.conversationData['Athenticated'] = 'true';
     }else{
        session.send("Invalid username and password, Please try Again!");
+       session.send(hashed);
     }
 
 }
