@@ -1,5 +1,5 @@
 var request = require('request');
-
+var customvision = require('./CustomVision');
 
 exports.retreiveMessage = function (session) {
 
@@ -31,7 +31,7 @@ exports.getnoteidentification=function isAttachment(session) {
     var msg = session.message.text;
     if ((session.message.attachments && session.message.attachments.length > 0) || msg.includes("http") || msg.includes("https") || msg.includes("png") || msg.includes("jpg")) {
 
-        customVision.retreiveMessage(session);
+        customvision.retreiveMessage(session);
 
         return true;
     }
