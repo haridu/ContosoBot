@@ -6,6 +6,7 @@ exports.Athenticate = function getAuthentication(session, username, password) {
     rest.GetSavedAuth(url, session, username, password, handleAuthentication);
 };
 
+//check for authentication with username and password
 function handleAuthentication(message, session, username, password) {
     var favouriteFoodResponse = JSON.parse(message);
     var Authticated = false;

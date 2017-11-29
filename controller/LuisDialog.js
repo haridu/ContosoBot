@@ -1,16 +1,17 @@
 var builder = require('botbuilder');
 var currencies = require("./Favouritecurrencies");
-var currenciesexchange = require("./EchangeRate");
+var currenciesexchange = require("./ExchangeRate");
 var customVision = require("./CustomVision");
 var textAnalysis = require("./TextAnalysis");
 var login = require("./Login");
 
-
+//starts bot dialogs
 exports.startDialog = function (bot) {
-
+    //luis instantiation
     var recognizer = new builder.LuisRecognizer('https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/e4a99a2c-0797-4fc8-be41-c1f5d5c4e439?subscription-key=70a969c682e94fb0a047edde403fe126&verbose=true&timezoneOffset=0&q=');
     bot.recognizer(recognizer);
 
+    //dialog for getting exchange rates between two currencies
     bot.dialog('GetSpecifcCurrencyExchangeRates', [
 
         function (session, args, next) {
@@ -32,7 +33,7 @@ exports.startDialog = function (bot) {
         matches: 'GetSpecifcCurrencyExchangeRates'
     });
 
-
+    //dialog for getting exchange rates based on request currency
     bot.dialog('GetExchangeratebasedOn', [
 
         function (session, args, next) {
@@ -53,7 +54,7 @@ exports.startDialog = function (bot) {
         matches: 'GetExchangeratebasedOn'
     });
 
-
+   //dialog for getting saved currencies list
     bot.dialog('GetMyCurrencies', [
         function (session, args, next) {
             session.dialogData.args = args || {};
@@ -78,7 +79,7 @@ exports.startDialog = function (bot) {
     });
 
 
-
+   //dialog for login, this works but is standalone and not intergrated due to unstability
     bot.dialog('Login', [
         function (session, args, next) {
 
@@ -87,7 +88,7 @@ exports.startDialog = function (bot) {
             if (!session.conversationData["username"]) {
                 builder.Prompts.text(session, "Enter a username .");
             } else {
-                next(); // Skip if we already have this info.
+                next(); 
             }
         },
         function (session, results, args, next) {
@@ -98,7 +99,7 @@ exports.startDialog = function (bot) {
             if (!session.conversationData['password']) {
                 builder.Prompts.text(session, "Enter a password ");
             } else {
-                next(); // Skip if we already have this info.
+                next(); 
             }
         },
         function (session, results, args, next) {
@@ -169,7 +170,7 @@ exports.startDialog = function (bot) {
         },
         function (session, results, next) {
 
-            // Pulls out the food entity from the session if it exists
+            // Pulls out the currency entity from the session if it exists
             var currencyEntity = builder.EntityRecognizer.findEntity(session.dialogData.args.intent.entities, 'currency');
 
             // Checks if the for entity was found
@@ -186,7 +187,7 @@ exports.startDialog = function (bot) {
         matches: 'DeleteFromSaved'
     });
 
-
+    //dialog for identifying currency from url 
     bot.dialog('Image', function (session, args) {
 
         if (customVision.getnoteidentification(session)) {
@@ -201,7 +202,7 @@ exports.startDialog = function (bot) {
         matches: 'Image'
     });
 
-
+    //dialog for starting bot messege 
     bot.dialog('start', function (session, args) {
 
         var attachment = [];
@@ -226,7 +227,7 @@ exports.startDialog = function (bot) {
     });
 
 
-
+    //dialog for help bot messege 
     bot.dialog('Help', function (session, args) {
 
         var attachment = [];
@@ -250,6 +251,7 @@ exports.startDialog = function (bot) {
         matches: 'Help'
     });
 
+    //dialog for welcome messege 
     bot.dialog('Welcome', function (session, args) {
 
         session.send("Hello there!");
@@ -259,6 +261,7 @@ exports.startDialog = function (bot) {
             ]
         };
 
+        //text analysis for user input
         textAnalysis.HandleText(documents, session);
         session.endDialog();
     }).triggerAction({

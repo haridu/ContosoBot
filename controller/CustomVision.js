@@ -1,5 +1,6 @@
 var request = require('request');
 
+
 exports.retreiveMessage = function (session) {
 
     request.post({
@@ -16,6 +17,7 @@ exports.retreiveMessage = function (session) {
     });
 }
 
+//provide identification of the currency url
 function validResponse(body) {
     if (body && body.Predictions && body.Predictions[0].Tag) {
         return "This is " + body.Predictions[0].Tag +" currency note"
@@ -24,6 +26,7 @@ function validResponse(body) {
     }
 }
 
+//check if the messege is a url
 exports.getnoteidentification=function isAttachment(session) {
     var msg = session.message.text;
     if ((session.message.attachments && session.message.attachments.length > 0) || msg.includes("http") || msg.includes("https") || msg.includes("png") || msg.includes("jpg")) {

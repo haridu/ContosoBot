@@ -25,7 +25,7 @@ exports.deleteSavedCurrency = function deleteSaved(session, username, favouritec
 
                 console.log(allCurrencies[i]);
 
-                rest.deleteCurrencyFromSaved(url, session, username, favouritecurrencies, allCurrencies[i].id, handleDeletedCurrencyRespons)
+                rest.deleteCurrencyFromSaved(url, session, username, favouritecurrencies, allCurrencies[i].id, handleDeletedCurrencyResponse)
                 num++;
             }
         }
@@ -41,8 +41,10 @@ exports.deleteSavedCurrency = function deleteSaved(session, username, favouritec
 };
 
 function handleDeletedCurrencyResponse(body, session, username, savedCurrency) {
+    console.log('done');
 }
 
+//provide saved currencies list with a hero card
 function handleSavedCurrenciesResponse(message, session, username) {
 
     var allCurrencies = [];

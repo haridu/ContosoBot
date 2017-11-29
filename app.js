@@ -17,6 +17,7 @@ var connector = new builder.ChatConnector({
     appPassword: "llhRUQXD499(}hsdxWM60$|"
 });
 
+
 /*
 var connector = new builder.ChatConnector({
     appId: process.env.MICROSOFT_APP_ID,
@@ -40,10 +41,10 @@ var bot = new builder.UniversalBot(connector, function (session) {
    
 });
 
+//check if the attachemnt is a url
 function isAttachment(session) { 
     var msg = session.message.text;
     if ((session.message.attachments && session.message.attachments.length > 0) || msg.includes("http")||msg.includes("https")||msg.includes("png")||msg.includes("jpg")) {
-      
         customVision.retreiveMessage(session);
 
         return true;
@@ -53,6 +54,7 @@ function isAttachment(session) {
     }
 }
 
+//used for start dialog when chat opens
 bot.on('conversationUpdate', function (message) {
     if (message.membersAdded) {
         message.membersAdded.forEach(function (identity) {

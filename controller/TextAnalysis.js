@@ -1,4 +1,3 @@
-//'use strict';
 var rest = require('../API/Restclient');
 var https = require ('https');
 var LuisDialog=require('./LuisDialog');
@@ -36,6 +35,7 @@ var response_handler = function (response,session) {
     });
 };
 
+//send text to be analysed
 exports.HandleText =function SendTextToAnalyze (documents,session) {
     var body = JSON.stringify (documents);
 
